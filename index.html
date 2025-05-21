@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Minutes - Transcription Test</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, button {
+      padding: 10px;
+      margin-top: 10px;
+    }
+    #transcription {
+      white-space: pre-line;
+      background: #f9f9f9;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Smart Minutes Transcription Test</h2>
+
+  <form id="uploadForm">
+    <label for="audio">Upload .mp3 audio:</label><br>
+    <input type="file" id="audio" name="audio" accept="audio/mp3" required><br>
+    <button type="submit">Transcribe</button>
+  </form>
+
+  <h3>Transcription:</h3>
+  <div id="transcription">No transcript yet.</div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const transcriptionDiv = document.getElementById('transcription');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('audio');
+      const file = fileInput.files[0];
+      if (!file) return alert('Please select an audio file.');
+
+      const formData = new FormData();
+      formData.append('audio', file);
+
+      transcriptionDiv.textContent = '⏳ Uploading and transcribing...';
+
+      try {
+        const res = await fetch('http://localhost:3000/transcribe', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          transcriptionDiv.textContent = data.transcription || '[No speech detected]';
+        } else {
+          transcriptionDiv.textContent = `⚠️ Error: ${data.message}`;
+        }
+      } catch (err) {
+        transcriptionDiv.textContent = '❌ Failed to connect to backend: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

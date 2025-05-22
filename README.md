@@ -22,7 +22,7 @@ Before running this application, you need to have the following:
 2. Install the project dependencies:
 
    ```shell
-   npm install
+   npm install express cors multer @google-cloud/storage @google-cloud/speech
    ```
 
 ## Usage

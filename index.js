@@ -1,17 +1,21 @@
 // gdrive-setup.js
 const { google } = require('googleapis');
 const fs = require('fs');
+const path = require('path');
 
-// Path to your secret key on Render
-const momKeyPath = '/etc/secrets/smartminutesMoMkey.json';
-const parentFolderId = '1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr'; // Replace with your folder ID
-
+// Write secret key JSON to temp file if using env variable
+const momKeyPath = '/tmp/smartminutesMoMkey.json';
 if (!fs.existsSync(momKeyPath)) {
-  console.error('❌ Key file not found at', momKeyPath);
-  process.exit(1);
+  if (!process.env.SMARTMINUTES_MOM_KEY_FILE) {
+    console.error('❌ No Google Drive key provided');
+    process.exit(1);
+  }
+  fs.writeFileSync(momKeyPath, process.env.SMARTMINUTES_MOM_KEY_FILE);
 }
 
-// Initialize Google Drive
+// Drive folder ID
+const parentFolderId = '1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr';
+
 async function initDrive() {
   try {
     const auth = new google.auth.GoogleAuth({
@@ -24,7 +28,6 @@ async function initDrive() {
 
     console.log('✅ Google Drive initialized');
 
-    // Test folder access
     const res = await drive.files.list({
       q: `'${parentFolderId}' in parents`,
       fields: 'files(id, name)',
@@ -45,5 +48,4 @@ async function initDrive() {
   }
 }
 
-// Example usage
 initDrive();

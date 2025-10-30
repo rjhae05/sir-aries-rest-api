@@ -1,21 +1,28 @@
-// gdrive-setup-env.js
+// gdrive-setup-render.js
 const { google } = require('googleapis');
+
+// 🔹 Debug top-level
+console.log('🚀 Starting Google Drive init script on Render...');
 
 // Environment variable containing the full JSON string of your service account
 const serviceAccountJson = process.env.SMARTMINUTES_MOM_KEY_JSON;
-
-// Google Drive folder ID you want to access
 const parentFolderId = process.env.SMARTMINUTES_PARENT_FOLDER_ID || '1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr';
 
+console.log('DEBUG: Folder ID:', parentFolderId);
+
+// Check environment variable
 if (!serviceAccountJson) {
-  console.error('❌ SMARTMINUTES_MOM_KEY_JSON environment variable not set');
+  console.error('❌ SMARTMINUTES_MOM_KEY_JSON environment variable not set!');
   process.exit(1);
+} else {
+  console.log('✅ SMARTMINUTES_MOM_KEY_JSON found');
 }
 
-// Parse JSON string
+// Parse JSON string safely
 let keyObj;
 try {
   keyObj = JSON.parse(serviceAccountJson);
+  console.log('✅ JSON parsed successfully');
 } catch (err) {
   console.error('❌ Failed to parse SMARTMINUTES_MOM_KEY_JSON:', err.message);
   process.exit(1);
@@ -24,20 +31,23 @@ try {
 // Initialize Google Drive
 async function initDrive() {
   try {
-    // Create GoogleAuth client using JSON credentials
+    console.log('🔹 Creating GoogleAuth client...');
     const auth = new google.auth.GoogleAuth({
       credentials: keyObj,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 
+    console.log('🔹 Getting auth client...');
     const authClient = await auth.getClient();
+
+    console.log('🔹 Initializing Drive client...');
     const drive = google.drive({ version: 'v3', auth: authClient });
 
-    // Log authenticated email
+    console.log('🔹 Checking authenticated user...');
     const about = await drive.about.get({ fields: 'user' });
     console.log('✅ Authenticated as:', about.data.user.emailAddress);
 
-    // Test folder access
+    console.log('🔹 Listing files in folder...');
     const res = await drive.files.list({
       q: `'${parentFolderId}' in parents`,
       fields: 'files(id, name)',
@@ -58,9 +68,7 @@ async function initDrive() {
   }
 }
 
-// Example usage
-initDrive().then(drive => {
-  console.log('🚀 Drive client ready for use!');
-}).catch(err => {
-  console.error('❌ Unexpected error:', err);
-});
+// Run the script directly
+initDrive()
+  .then(() => console.log('🚀 Drive client ready for use!'))
+  .catch(err => console.error('❌ Unexpected error:', err));

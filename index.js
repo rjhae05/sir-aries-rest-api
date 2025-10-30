@@ -5,7 +5,7 @@ const { google } = require('googleapis');
 console.log('🚀 Starting Google Drive init script on Render...');
 
 // Environment variable containing the full JSON string of your service account
-const serviceAccountJson = process.env.SMARTMINUTES_MOM_KEY_JSON;
+const serviceAccountJson = process.env.SMARTMINUTES_MOM_KEY;
 const parentFolderId = process.env.SMARTMINUTES_PARENT_FOLDER_ID || '1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr';
 
 console.log('DEBUG: Folder ID:', parentFolderId);
@@ -72,3 +72,4 @@ async function initDrive() {
 initDrive()
   .then(() => console.log('🚀 Drive client ready for use!'))
   .catch(err => console.error('❌ Unexpected error:', err));
+

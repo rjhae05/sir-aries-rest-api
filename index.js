@@ -394,6 +394,7 @@ Closing:
 
 // ——— Summarize Endpoint ———
 app.post('/summarize', async (req, res) => {
+  console.log('SMARTMINUTES_MOM_KEY:', momKey);
   try {
     const transcript = fs.readFileSync('./transcript.txt', 'utf-8');
     const audioFileName = req.body?.audioFileName || 'Transcription';
@@ -633,3 +634,4 @@ app.get('/allminutes/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+

@@ -76,16 +76,17 @@ async function testListFiles() {
     const res = await drive.files.list({
       q: `'${parentFolderId}' in parents`,
       fields: 'files(id, name)',
+      pageSize: 5, // just sample files
     });
 
-    if (!res.data.files.length) {
-      console.log('📂 Folder accessible but empty.');
+    if (!res.data.files || res.data.files.length === 0) {
+      console.log(`📂 Folder "${parentFolderId}" accessible, but empty.`);
     } else {
-      console.log('✅ Folder accessible. Files:');
+      console.log(`✅ Folder "${parentFolderId}" accessible. Sample files:`);
       res.data.files.forEach(file => console.log(`📄 ${file.name} (ID: ${file.id})`));
     }
   } catch (err) {
-    console.error('❌ Cannot list files:', err.response?.data || err.message);
+    console.error(`❌ Cannot access folder "${parentFolderId}":`, err.response?.data || err.message);
   }
 }
 
@@ -646,6 +647,7 @@ app.get('/allminutes/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
 

@@ -89,6 +89,19 @@ async function testListFiles() {
   }
 }
 
+async function initDrive() {
+  try {
+    const authClient = await auth.getClient();
+    drive = google.drive({ version: 'v3', auth: authClient });
+
+    console.log('🔑 Google Drive client initialized.');
+
+    await testListFiles(); // Check folder access
+  } catch (err) {
+    console.error('❌ Failed to initialize Google Drive:', err.response?.data || err.message);
+  }
+}
+
 
 // ——— Firebase Login ———
 app.post('/login', async (req, res) => {
@@ -633,6 +646,7 @@ app.get('/allminutes/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
 

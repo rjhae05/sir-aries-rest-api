@@ -1,25 +1,29 @@
-// gdrive-setup.js
+// gdrive-setup-env.js
 const { google } = require('googleapis');
-const fs = require('fs');
-const path = require('path');
 
-// Write secret key JSON to temp file if using env variable
-const momKeyPath = '/tmp/smartminutesMoMkey.json';
-if (!fs.existsSync(momKeyPath)) {
-  if (!process.env.SMARTMINUTES_MOM_KEY_FILE) {
-    console.error('❌ No Google Drive key provided');
-    process.exit(1);
-  }
-  fs.writeFileSync(momKeyPath, process.env.SMARTMINUTES_MOM_KEY_FILE);
+// Get the JSON string from env variable
+const serviceAccountJson = process.env.SMARTMINUTES_MOM_KEY_JSON;
+const parentFolderId = '1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr'; // your folder ID
+
+if (!serviceAccountJson) {
+  console.error('❌ SMARTMINUTES_MOM_KEY_JSON not set');
+  process.exit(1);
 }
 
-// Drive folder ID
-const parentFolderId = '1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr';
+// Parse JSON string
+let keyObj;
+try {
+  keyObj = JSON.parse(serviceAccountJson);
+} catch (err) {
+  console.error('❌ Failed to parse SMARTMINUTES_MOM_KEY_JSON:', err.message);
+  process.exit(1);
+}
 
+// Initialize Drive
 async function initDrive() {
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: momKeyPath,
+      credentials: keyObj,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 
@@ -28,6 +32,7 @@ async function initDrive() {
 
     console.log('✅ Google Drive initialized');
 
+    // Test folder access
     const res = await drive.files.list({
       q: `'${parentFolderId}' in parents`,
       fields: 'files(id, name)',
@@ -48,4 +53,5 @@ async function initDrive() {
   }
 }
 
+// Example usage
 initDrive();

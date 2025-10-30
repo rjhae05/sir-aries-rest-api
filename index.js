@@ -55,13 +55,7 @@ async function getDriveClient() {
   return drive;
 }
 
-(async () => {
-  const authClient = await auth.getClient();
-  drive = google.drive({ version: 'v3', auth: authClient });
 
-  // Test folder access on start
-  await testListFiles();
-})();
 
 // ——— Auto-correction Dictionary ———
 const corrections = {
@@ -656,6 +650,7 @@ app.get('/allminutes/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
 

@@ -1,49 +1,43 @@
-// gdrive-simple.js
 const { google } = require('googleapis');
+const path = require('path');
 
-const SERVICE_ACCOUNT_JSON = process.env.SMARTMINUTES_MOM_KEY;
-const FOLDER_ID = process.env.SMARTMINUTES_PARENT_FOLDER_ID || '1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr';
-
-if (!SERVICE_ACCOUNT_JSON) {
-  console.error('❌ SMARTMINUTES_MOM_KEY_JSON not set');
-  process.exit(1);
-}
-
-let key;
-try {
-  key = JSON.parse(SERVICE_ACCOUNT_JSON);
-} catch (err) {
-  console.error('❌ Failed to parse service account JSON:', err.message);
-  process.exit(1);
-}
-
-async function main() {
+async function testDriveListInFolder(folderId) {
   try {
-    // Initialize Google Drive client
+    // On Render, use an environment variable for the service account key file path
+    // e.g., set GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/key.json
+    const keyFilePath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+    if (!keyFilePath) {
+      throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable not set');
+    }
+
     const auth = new google.auth.GoogleAuth({
-      credentials: key,
+      keyFile: keyFilePath,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 
-    const drive = google.drive({ version: 'v3', auth: await auth.getClient() });
+    const authClient = await auth.getClient();
+    const drive = google.drive({ version: 'v3', auth: authClient });
 
-    // Simple test: list first 5 files in folder
-    const res = await drive.files.list({
-      q: `'${FOLDER_ID}' in parents`,
+    const response = await drive.files.list({
+      q: `'${folderId}' in parents and trashed = false`,
+      pageSize: 100,  // adjust as needed (max 1000)
       fields: 'files(id, name)',
-      pageSize: 5,
     });
 
-    console.log('✅ Connected to Google Drive');
-    if (res.data.files.length === 0) {
-      console.log('📂 Folder is empty');
+    console.log('Files in folder:', response.data.files);
+
+    if (response.data.files.length > 0) {
+      response.data.files.forEach(file => {
+        console.log(`File: ${file.name} (${file.id})`);
+      });
     } else {
-      console.log('📂 Files:');
-      res.data.files.forEach(f => console.log(`- ${f.name} (${f.id})`));
+      console.log('No files found in the specified folder.');
     }
-  } catch (err) {
-    console.error('❌ Google Drive connection failed:', err.message);
+  } catch (error) {
+    console.error('Error calling Drive API:', error);
   }
 }
 
-main();
+// Example usage - replace with your actual folder ID
+testDriveListInFolder('1S1us2ikMWxmrfraOnHbAUNQqMSXywfbr');

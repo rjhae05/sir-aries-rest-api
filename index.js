@@ -412,6 +412,12 @@ Closing:
 app.post('/summarize', async (req, res) => {
   console.log('SMARTMINUTES_MOM_KEY:', momKey);
   try {
+       // ✅ Ensure Drive is initialized
+    if (!drive) {
+      console.log("🔄 Drive not initialized yet — initializing now...");
+      const authClient = await auth.getClient();
+      drive = google.drive({ version: 'v3', auth: authClient });
+    }
     const transcript = fs.readFileSync('./transcript.txt', 'utf-8');
     const audioFileName = req.body?.audioFileName || 'Transcription';
     const mp3BaseName = audioFileName.replace(/\.[^/.]+$/, "");
@@ -650,6 +656,7 @@ app.get('/allminutes/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
 

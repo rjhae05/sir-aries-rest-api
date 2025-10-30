@@ -203,7 +203,7 @@ app.post('/transcribe', upload.single('audio'), async (req, res) => {
   }
 });
 
-/*
+
 // ——— Summarize Endpoint ———
 app.post('/summarize', async (req, res) => {
   try {
@@ -389,9 +389,8 @@ Closing:
   }
 });
 
-*/
 
-
+/*
 // ——— Summarize Endpoint ———
 app.post('/summarize', async (req, res) => {
   console.log('SMARTMINUTES_MOM_KEY:', momKey);
@@ -627,11 +626,12 @@ app.get('/allminutes/:id', async (req, res) => {
     });
   }
 });
-
+*/
 
 
 // ——— Start Server ———
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 

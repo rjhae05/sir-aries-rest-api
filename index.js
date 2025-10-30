@@ -38,6 +38,8 @@ const openai = new OpenAI({ apiKey: openaiKey });
 const upload = multer({ storage: multer.memoryStorage() });
 
 // ——— Google Drive Auth Setup ———
+console.log('🧩 SMARTMINUTES_MOM_KEY =', momKey);
+console.log('📂 File exists:', fs.existsSync(momKey));
 const auth = new google.auth.GoogleAuth({
   keyFile: momKey,
   scopes: ['https://www.googleapis.com/auth/drive'],
@@ -656,6 +658,7 @@ app.get('/allminutes/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
 
 
 

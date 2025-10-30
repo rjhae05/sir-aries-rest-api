@@ -10,6 +10,10 @@ const { Document, Packer, Paragraph } = require('docx');
 const { google } = require('googleapis');
 require('dotenv').config();
 
+console.log('🚀 ENV LOADED:', !!process.env.SMARTMINUTES_MOM_KEY);
+console.log('🔑 SMARTMINUTES_MOM_KEY path:', process.env.SMARTMINUTES_MOM_KEY);
+console.log('📂 File exists at path?', fs.existsSync(process.env.SMARTMINUTES_MOM_KEY));
+
 const admin = require('./firebaseAdmin');
 const db = admin.database();
 
@@ -339,3 +343,4 @@ initDrive().then(() => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
   });
 });
+

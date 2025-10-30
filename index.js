@@ -18,7 +18,8 @@ const db = admin.database();
 const PORT = process.env.PORT || 3000;
 const openaiKey = process.env.OPENAI_API_KEY;
 const smartMinutesKey = process.env.SMART_MINUTES_KEY;
-const momKey = process.env.SMARTMINUTES_MOM_KEY;
+// The path Render mounts the file
+const momKeyPath = process.env.SMARTMINUTES_MOM_KEY_FILE || '/etc/secrets/smartminutesMoMkey.json';
 
 const projectId = 'speech-to-text-459913';
 const bucketName = 'smart-minutes-bucket';
@@ -282,3 +283,4 @@ app.get('/allminutes/:id', async (req, res) => {
 initDrive().then(() => {
   app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
 });
+
